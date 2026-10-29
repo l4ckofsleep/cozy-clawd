@@ -401,7 +401,7 @@ test('bars stand in a grid, the chat tokens add up, and the band folds away', as
     Array.isArray(n) ? n.map(text).join('')
     : n && typeof n === 'object' ? ((n as { type?: string; props?: { label?: string } }).type === 'Button' && !(n as { children?: unknown[] }).children?.length ? (n as { props: { label: string } }).props.label : text((n as { children?: unknown }).children))
     : typeof n === 'string' ? n : ''
-  type Node = { type?: string; props?: { width?: number }; children?: unknown }
+  type Node = { type?: string; props?: { width?: number; minWidth?: number }; children?: unknown }
   const rows = async (surface: 'terminal' | 'desktop') => {
     const tree = (await $.ui.render({ component: 'AbovePrompt', props: band(false).props, surface })) as unknown as { children: { children: Node[] }[] }
     return tree.children[0]!.children
@@ -416,7 +416,7 @@ test('bars stand in a grid, the chat tokens add up, and the band folds away', as
       const isBar = n.type === 'Svg' || (n.type === 'Text' && /^▃+$/.test(text(n)))
       if (isBar && !inBar) starts.push(x)
       inBar = isBar
-      x += n.type === 'Svg' ? n.props!.width! / 8 : n.props?.width ?? text(n).length
+      x += n.type === 'Svg' ? n.props!.width! / 8 : n.props?.width ?? Math.max(n.props?.minWidth ?? 0, text(n).length)
     }
     return starts
   }

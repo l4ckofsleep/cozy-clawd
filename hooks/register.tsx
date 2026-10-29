@@ -521,16 +521,17 @@ export const register: Register = on => {
       })
       return <Svg source={`<svg xmlns="http://www.w3.org/2000/svg" width="${x}" height="${BAR_H}">${rects.join('')}</svg>`} alt={alt} width={x} height={BAR_H} />
     }
-    // Label and value sit in boxes a fixed number of cells wide, which every surface
-    // measures in its monospace metric, so the columns line up whatever the font.
+    // Label and value sit in boxes at least a fixed number of cells wide, so the columns
+    // line up; a minimum, not a width: a desktop's font may draw the text wider than its
+    // cells, and a fixed width then cuts it to an ellipsis.
     const meter = (m: Meter, labelW: number, valueW: number) => {
       const p = m.empty ? 0 : v(m.k)
       const color = m.empty ? EMPTY : ramp(m.stops, p / 100)
       const text = valueOf(m)
       return [
-        <Box width={labelW + 1}><Text dimColor>{m.label}</Text></Box>,
+        <Box minWidth={labelW + 1} flexShrink={0}><Text dimColor>{m.label}</Text></Box>,
         bar(lineBar(p, barWidth, color, shimmer), `${m.label} ${Math.round(p)}%`),
-        <Box width={valueW}>{m.detail
+        <Box minWidth={valueW} flexShrink={0}>{m.detail
           ? keep(`${m.k}|${color}|${text}`, () => (
               <Button key={m.k} plain onPress={flipOf(m.k)}>
                 <Text color={color} bold>{text}</Text>
@@ -599,7 +600,7 @@ export const register: Register = on => {
         <Box flexDirection="column" alignItems="flex-start" marginRight={1}>
           <Box flexDirection="row">
             {/* Top left, where the folded line's `show` stands; the rows below keep its gutter. */}
-            <Box width={FOLD_W}>{keep('fold', () => <Button key="fold" plain dimColor onPress={fold(true)}>hide</Button>)}</Box>
+            <Box minWidth={FOLD_W} flexShrink={0}>{keep('fold', () => <Button key="fold" plain dimColor onPress={fold(true)}>hide</Button>)}</Box>
             {row(top)}
           </Box>
           <Box flexDirection="row">
